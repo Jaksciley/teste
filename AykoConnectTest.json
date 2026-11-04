@@ -1,0 +1,616 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Ayko Connect",
+    "description": "Integra sistemas comerciais e de faturação ao ERP Sankhya por serviços do add-on Ayko Connect.\nClientes autenticados enviam todos os comandos ao broker Sankhya, com o identificador do serviço em `serviceName` e o conteúdo no envelope `requestBody.request`.",
+    "version": "1.4.4",
+    "contact": {
+      "email": "jaksciley.araujo@ayko.tech"
+    }
+  },
+  "servers": [
+    {
+      "url": "{baseUrl}",
+      "variables": {
+        "baseUrl": {
+          "default": "https://api.ayko.tech"
+        }
+      }
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    "schemas": {
+      "StandardError": {
+        "type": "object",
+        "properties": {
+          "codigo": {
+            "type": "string"
+          },
+          "mensagem": {
+            "type": "string"
+          }
+        }
+      },
+      "EventResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "1"
+          },
+          "serviceName": {
+            "type": "string"
+          },
+          "responseBody": {
+            "type": "object",
+            "properties": {
+              "body": {
+                "type": "object",
+                "properties": {
+                  "externalId": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": "SUCCESS"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "eventId": {
+                    "type": "integer"
+                  },
+                  "sankhyaId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/aykoconnect/service.sbr/AykoPartnerProfileSP.Get": {
+      "post": {
+        "tags": ["Partner"],
+        "summary": "Consultar Parceiros",
+        "operationId": "getPartner",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "AykoPartnerProfileSP.Get"
+            }
+          },
+          {
+            "name": "outputType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "mgeSession",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestBody": {
+                    "type": "object",
+                    "properties": {
+                      "request": {
+                        "type": "object",
+                        "properties": {
+                          "expand": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                          },
+                          "codParc": { "type": "integer" },
+                          "document": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Consulta executada com sucesso." },
+          "400": { "description": "Envelope, parâmetros ou filtros inválidos." },
+          "401": { "description": "Sessão ou chave de API inválida." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoPartnerProfileSP.CreateEvent": {
+      "post": {
+        "tags": ["Partner"],
+        "summary": "Criar Parceiro",
+        "operationId": "createPartner",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "default": "AykoPartnerProfileSP.CreateEvent" }
+          },
+          {
+            "name": "outputType",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "default": "json" }
+          },
+          {
+            "name": "mgeSession",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestBody": {
+                    "type": "object",
+                    "properties": {
+                      "request": {
+                        "type": "object",
+                        "properties": {
+                          "sourceSystem": { "type": "string" },
+                          "externalId": { "type": "string" },
+                          "webhookUrl": { "type": "string", "format": "uri" },
+                          "codParc": { "type": "integer" },
+                          "document": { "type": "string" },
+                          "name": { "type": "string" },
+                          "legalName": { "type": "string" },
+                          "tradeName": { "type": "string" },
+                          "personType": { "type": "string" },
+                          "active": { "type": "boolean" },
+                          "client": { "type": "boolean" },
+                          "supplier": { "type": "boolean" },
+                          "cep": { "type": "string" },
+                          "street": { "type": "string" },
+                          "city": { "type": "string" },
+                          "state": { "type": "string" },
+                          "contacts": {
+                            "type": "array",
+                            "items": { "type": "object" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Evento de integração registado ou processado.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EventResponse" }
+              }
+            }
+          },
+          "400": { "description": "Requisição inválida." },
+          "401": { "description": "Não autorizado." },
+          "422": { "description": "Regra de negócio rejeitou o processamento." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoPartnerProfileSP.UpdateEvent": {
+      "post": {
+        "tags": ["Partner"],
+        "summary": "Atualizar Parceiro",
+        "operationId": "updatePartner",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoPartnerProfileSP.UpdateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Evento processado com sucesso." },
+          "422": { "description": "Erro de regra de negócio." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoContactProfileSP.Get": {
+      "post": {
+        "tags": ["Contact"],
+        "summary": "Consultar Contatos",
+        "operationId": "getContact",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoContactProfileSP.Get" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestBody": {
+                    "type": "object",
+                    "properties": {
+                      "request": {
+                        "type": "object",
+                        "properties": {
+                          "expand": { "type": "array", "items": { "type": "string" } },
+                          "codParc": { "type": "integer" },
+                          "codContato": { "type": "integer" },
+                          "document": { "type": "string" },
+                          "email": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Consulta executada com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoContactProfileSP.CreateEvent": {
+      "post": {
+        "tags": ["Contact"],
+        "summary": "Criar Contato",
+        "operationId": "createContact",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoContactProfileSP.CreateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Evento registado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoContactProfileSP.UpdateEvent": {
+      "post": {
+        "tags": ["Contact"],
+        "summary": "Atualizar Contato",
+        "operationId": "updateContact",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoContactProfileSP.UpdateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Evento processado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoProductRegistrationSP.Get": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Consultar Produtos",
+        "operationId": "getProduct",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoProductRegistrationSP.Get" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestBody": {
+                    "type": "object",
+                    "properties": {
+                      "request": {
+                        "type": "object",
+                        "properties": {
+                          "codProd": { "type": "integer" },
+                          "code": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Consulta executada com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoProductRegistrationSP.CreateEvent": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Criar Produto",
+        "operationId": "createProduct",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoProductRegistrationSP.CreateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Produto registado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoProductRegistrationSP.UpdateEvent": {
+      "post": {
+        "tags": ["Product"],
+        "summary": "Atualizar Produto",
+        "operationId": "updateProduct",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoProductRegistrationSP.UpdateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Produto atualizado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoServiceRegistrationSP.Get": {
+      "post": {
+        "tags": ["Service"],
+        "summary": "Consultar Serviços",
+        "operationId": "getService",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoServiceRegistrationSP.Get" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Consulta executada com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoServiceRegistrationSP.CreateEvent": {
+      "post": {
+        "tags": ["Service"],
+        "summary": "Criar Serviço",
+        "operationId": "createService",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoServiceRegistrationSP.CreateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Serviço registado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoServiceRegistrationSP.UpdateEvent": {
+      "post": {
+        "tags": ["Service"],
+        "summary": "Atualizar Serviço",
+        "operationId": "updateService",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoServiceRegistrationSP.UpdateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Serviço atualizado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoContractRegistrationSP.Get": {
+      "post": {
+        "tags": ["Contract"],
+        "summary": "Consultar Contratos",
+        "operationId": "getContract",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoContractRegistrationSP.Get" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Consulta executada com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoContractRegistrationSP.CreateEvent": {
+      "post": {
+        "tags": ["Contract"],
+        "summary": "Criar Contrato",
+        "operationId": "createContract",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoContractRegistrationSP.CreateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Contrato registado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoContractRegistrationSP.UpdateEvent": {
+      "post": {
+        "tags": ["Contract"],
+        "summary": "Atualizar Contrato",
+        "operationId": "updateContract",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoContractRegistrationSP.UpdateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Contrato atualizado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoVinculoPJProfileSP.Get": {
+      "post": {
+        "tags": ["VinculoPJ"],
+        "summary": "Consultar Vínculos PJ",
+        "operationId": "getVinculoPJ",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoVinculoPJProfileSP.Get" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Consulta executada com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoVinculoPJProfileSP.CreateEvent": {
+      "post": {
+        "tags": ["VinculoPJ"],
+        "summary": "Criar Vínculo PJ",
+        "operationId": "createVinculoPJ",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoVinculoPJProfileSP.CreateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Vínculo PJ registado com sucesso." }
+        }
+      }
+    },
+    "/aykoconnect/service.sbr/AykoVinculoPJProfileSP.UpdateEvent": {
+      "post": {
+        "tags": ["VinculoPJ"],
+        "summary": "Atualizar Vínculo PJ",
+        "operationId": "updateVinculoPJ",
+        "parameters": [
+          { "name": "serviceName", "in": "query", "required": true, "schema": { "type": "string", "default": "AykoVinculoPJProfileSP.UpdateEvent" } },
+          { "name": "outputType", "in": "query", "required": true, "schema": { "type": "string", "default": "json" } },
+          { "name": "mgeSession", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Vínculo PJ atualizado com sucesso." }
+        }
+      }
+    }
+  }
+}
